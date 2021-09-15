@@ -99,3 +99,4 @@ def menu():#created the function menu which will act as the user interface
 
 
 menu()
+print("This is to test")
