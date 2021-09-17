@@ -1,6 +1,6 @@
 import mysql.connector
 
-db = mysql.connector.connect( ### this information is my mysql info to log into that server
+db = mysql.connector.connect( ### this information is my mysql info to log into that server, should make your own server account
 	host = "localhost",
 	user = "root",
 	passwd = "tKeZ!123",
