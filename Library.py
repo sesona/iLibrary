@@ -10,8 +10,6 @@ db = mysql.connector.connect( ### this information is my mysql info to log into 
 	)
 
 mycursor = db.cursor()
-#mycursor.execute("CREATE TABLE books(ISBM varchar(50) PRIMARY KEY , Title varchar(50), Author varchar(200), Category varchar(100), Year integer)")
-#mycursor.execute("CREATE TABLE students(ID integer PRIMARY KEY, Name varchar(100),Surname varchar(100),Email varchar(20))")
 
 def addBook(ISBN,Title,Author,Category,Year):
 	query = """INSERT INTO books (ISBN,Title,Author,Category,Year) VALUES (%s, %s,%s,%s,%s)"""
