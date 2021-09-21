@@ -48,7 +48,7 @@ def displayStudents ():
     		print(record)
 
 def addStudent(ID,Name,Surname,Email,Password):
-	query = """INSERT INTO students (ID,Name,Surname,Email) VALUES (%s, %s,%s,%s,%s)"""
+	query = """INSERT INTO students (ID,Name,Surname,Email,password) VALUES (%s, %s,%s,%s,%s)"""
 	## storing values in a variable
 	values = (ID,Name,Surname,Email,Password)
 	## executing the query with values
