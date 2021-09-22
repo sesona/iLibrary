@@ -6,7 +6,7 @@ db = mysql.connector.connect( ### this information is my mysql info to log into 
 	port = "3306",
 	user = "root",
 	passwd = "",
-	database = "librarysystem"
+	database = "library system"
 	)
 
 mycursor = db.cursor()
