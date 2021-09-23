@@ -38,7 +38,7 @@ def returnLoan(ID,ISBN,Date):
     db.child("outLoan").child(ID).remove()
 
 def viewloans():
-    loans = db.child("outloan").get()
+    loans = db.child("outLoan").get()
     for person in loans.each():
         print(person.val())
         print(person.key())
