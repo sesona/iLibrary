@@ -90,3 +90,9 @@ def deleteBook(ISBN):
     db.child("books").child(ISBN).remove()
 
 
+def booksonloan():
+    books = db.child("books").get()
+    for person in books.each():
+        if person.val()["Loaned"] =="yes":
+            print(person.val())
+            print(person.key())
