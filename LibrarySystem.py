@@ -33,7 +33,7 @@ def loanout(ID,ISBN,Date):
     data = {"ID":ID,"ISBN":ISBN,"Date":Date}
     db.child("outLoan").child(ID).push(data)
 
-def returnLoan(ID,ISBN,Date):
+def returnLoan(ID,ISBN):
     db.child("books").child(ISBN).update({"Loaned":"no"})
     db.child("outLoan").child(ID).remove()
 
