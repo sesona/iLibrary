@@ -74,4 +74,8 @@ def searchBook(Y):
 	for record in records:
 		print(record)
 
- 
+def updateBook(Title,ISBN):
+	## executing the query
+	mycursor.execute("UPDATE users SET name = (Title) WHERE id = {ISBN}")
+	## final step to tell the database that we have changed the table data
+	db.commit() 
