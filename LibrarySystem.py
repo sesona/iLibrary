@@ -1,5 +1,7 @@
+## import the pyrebase library
 import pyrebase
 
+## use the config variable from the Firebase as firebaseConfig dictionary
 FirebaseConfig = { "apiKey": "AIzaSyBSYFWV5E7IexfLszmeyj50JaE9ueZ8moE",
     "authDomain": "library-system-7360c.firebaseapp.com",
     "databaseURL":"https://library-system-7360c-default-rtdb.firebaseio.com/",
@@ -9,15 +11,18 @@ FirebaseConfig = { "apiKey": "AIzaSyBSYFWV5E7IexfLszmeyj50JaE9ueZ8moE",
     "appId": "1:102182920013:web:eee0c4a7b1e9d9d74c6104",
     "measurementId": "G-BWJFD5JJT6"}
 
-
+## initializing the firebaseConfig dictionary to the firebase variable
 firebase = pyrebase.initialize_app(FirebaseConfig)
 
+## initializing reference variable for the Realtime Database
 db = firebase.database()
+## initializing reference variable for the Firebase Authentication
 auth = firebase.auth()
 #Push data
 
 
 #login
+## email method that handles exceptions and checks whether, the email and password entered by the user is valid or not
 def email(email,password):
     try:
         auth.sign_in_with_email_and_password(email,password)
@@ -25,17 +30,18 @@ def email(email,password):
     except:
         print("Invalid try again")
 
+## the user creates an account by entering their valid email and password        
 def signup(email,password):
         auth.create_user_with_email_and_password(email,password)
 
 def loanout(ID,ISBN,Date):
-    db.child("books").child(ISBN).update({"Loaned":"yes"})
-    data = {"ID":ID,"ISBN":ISBN,"Date":Date}
-    db.child("outLoan").child(ID).push(data)
+    db.child("books").child(ISBN).update({"Loaned":"yes"})      ## checks if a book is loaned using the ISBN in the database and updates the user 
+    data = {"ID":ID,"ISBN":ISBN,"Date":Date}                    ## the user ID, book ISBN and date is assigned to data variable
+    db.child("outLoan").child(ID).push(data)                    ## returns the selected element, ID
 
 def returnLoan(ID,ISBN):
-    db.child("books").child(ISBN).update({"Loaned":"no"})
-    db.child("outLoan").child(ID).remove()
+    db.child("books").child(ISBN).update({"Loaned":"no"})       ## checks if a book is loaned using the ISBN in the database and updates the user 
+    db.child("outLoan").child(ID).remove()                      ## the library admin removes the selected element, ID from the database
 
 def viewloans():
     try:
@@ -47,18 +53,18 @@ def viewloans():
         print("No loaned books")
 
 def AddBook(ISBN,Title,Author,Catergory,Year):
-    data = {"ISBN":ISBN,"Title":Title,"Author":Author,"Category":Catergory,"Year":Year}
-    db.child("books").child(ISBN).push(data)
+    data = {"ISBN":ISBN,"Title":Title,"Author":Author,"Category":Catergory,"Year":Year}     ## creates a dictionary consisting of all the book details and assigned to data variable
+    db.child("books").child(ISBN).push(data)                                                ## returns all direct children of the books selected element, ISBN
 
 def AddStudent(ID,Name,Surname,email,password):
-    data = {"ID":ID,"Name":Name,"Surname":Surname,"Email":email,"Password":password}
-    db.child("students").child(ID).push(data)
+    data = {"ID":ID,"Name":Name,"Surname":Surname,"Email":email,"Password":password}        ## creates a dictionary consisting of all the student details and assigned to data variable
+    db.child("students").child(ID).push(data)                                               ## returns all direct children of the students selected element, ID
 
 def UpdateStudent(ID,Column,Change):
-    db.child("students").child(ID).update({Column:Change})
+    db.child("students").child(ID).update({Column:Change})                                  ## inserts a change to a students specific column
 
 def UpdateBooks(ISBN,Column,Change):
-    db.child("books").child(ISBN).update({Column:Change})
+    db.child("books").child(ISBN).update({Column:Change})                                   ## inserts a change to a books specific column
 
 def viewStudents():
     try:
@@ -88,10 +94,10 @@ def SearchStudentID(ID):
     print(pr.val())
 
 def deleteStudent(ID):
-    db.child("students").child(ID).remove()
+    db.child("students").child(ID).remove()                     ## the library admin deletes the students selected element, ID from the database 
 
 def deleteBook(ISBN):
-    db.child("books").child(ISBN).remove()
+    db.child("books").child(ISBN).remove()                      ## the library admin deletes the books selected element, ISBN from the database 
 
 def myprofile(ID):
     pr = db.child("outLoan").child(ID).get()
@@ -99,11 +105,11 @@ def myprofile(ID):
 
 
 def booksonloan():
-    books = db.child("books").get()
-    for person in books.each():
+    books = db.child("books").get()                             ## the books variable is assigned to a database which returns the value for a given key, books
+    for person in books.each():                                 ## iterates for person in the books variable for every matched key
         if person.val()["Loaned"] =="yes":
-            print(person.val())
-            print(person.key())
+            print(person.val())                                 ## displays the value of the matched key
+            print(person.key())                                 ## displays the list of all the matched key(s)
 
 
 
