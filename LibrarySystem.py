@@ -38,13 +38,16 @@ def returnLoan(ID,ISBN):
     db.child("outLoan").child(ID).remove()
 
 def viewloans():
-    loans = db.child("outLoan").get()
-    for person in loans.each():
-        print(person.val())
-        print(person.key())
+    try:
+        loans = db.child("outLoan").get()
+        for person in loans.each():
+            print(person.val())
+            print(person.key())
+    except:
+        print("No loaned books")
 
-def AddBook(ISBN,Title,Author,Catergory,Year,loaned):
-    data = {"ISBN":ISBN,"Title":Title,"Author":Author,"Category":Catergory,"Year":Year,"Loaned":loaned}
+def AddBook(ISBN,Title,Author,Catergory,Year):
+    data = {"ISBN":ISBN,"Title":Title,"Author":Author,"Category":Catergory,"Year":Year}
     db.child("books").child(ISBN).push(data)
 
 def AddStudent(ID,Name,Surname,email,password):
@@ -58,36 +61,41 @@ def UpdateBooks(ISBN,Column,Change):
     db.child("books").child(ISBN).update({Column:Change})
 
 def viewStudents():
-    students = db.child("students").get()
-    for person in students.each():
-        print(person.val())
-        print(person.key())
+    try:
+        students = db.child("students").get()
+        for person in students.each():
+            print(person.val())
+            print(person.key())
+    except:
+        print("No Students in System")
 
 def viewBooks():
-    books = db.child("books").get()
-    for person in books.each():
-        print(person.val())
-        print(person.key())
+    try:
+        books = db.child("books").get()
+        for person in books.each():
+            print(person.val())
+            print(person.key())
+    except:
+        print("No Books in System")
 
 def SearchBookISBN(ISBN):
-    books  = db.child("books").get()
-    for person in books.each():
-        if person.val()["ISBN"] == ISBN:
-            print(person.val())
-            print(person.key())
+    pr = db.child("students").child(ISBN).get()
+    print(pr.val())
+
 
 def SearchStudentID(ID):
-    students  = db.child("students").get()
-    for person in students.each():
-        if person.val()["ID"] == ID:
-            print(person.val())
-            print(person.key())
+    pr = db.child("students").child(ID).get()
+    print(pr.val())
 
 def deleteStudent(ID):
     db.child("students").child(ID).remove()
 
 def deleteBook(ISBN):
     db.child("books").child(ISBN).remove()
+
+def myprofile(ID):
+    pr = db.child("outLoan").child(ID).get()
+    print(pr.val())
 
 
 def booksonloan():
@@ -96,3 +104,6 @@ def booksonloan():
         if person.val()["Loaned"] =="yes":
             print(person.val())
             print(person.key())
+
+
+
