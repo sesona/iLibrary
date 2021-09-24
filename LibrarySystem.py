@@ -1,4 +1,6 @@
 import pyrebase
+from datetime import date
+
 
 FirebaseConfig = { "apiKey": "AIzaSyBSYFWV5E7IexfLszmeyj50JaE9ueZ8moE",
     "authDomain": "library-system-7360c.firebaseapp.com",
@@ -31,14 +33,22 @@ def signup(email,password): #sign up
     except:
         print("Password too short")
 
-def loanout(ID,ISBN,Date): #Adds ID,ISBN and date into the loanout table
-    db.child("books").child(ISBN).update({"Loaned":"yes"})
-    data = {"ID":ID,"ISBN":ISBN,"Date":Date}
-    db.child("outLoan").child(ID).push(data)
+def loanout(ID,ISBN): #Adds ID,ISBN and date into the loanout table
+    try:
+        db.child("books").child(ISBN).update({"Loaned":"yes"})
+        time = date.today()
+        time = time.strftime('%m/%d/%Y')
+        data = {"ID":ID,"ISBN":ISBN,"Date":time}
+        db.child("outLoan").child(ID).push(data)
+    except:
+        print("Error")
 
 def returnLoan(ID,ISBN): #returns book back to book table and deletes entity
-    db.child("books").child(ISBN).update({"Loaned":"no"})
-    db.child("outLoan").child(ID).remove()
+    try:
+        db.child("books").child(ISBN).update({"Loaned":"no"})
+        db.child("outLoan").child(ID).remove()
+    except:
+        print("Error")
 
 def viewloans():
     try:
@@ -65,13 +75,12 @@ def UpdateBooks(ISBN,Column,Change):
     db.child("books").child(ISBN).update({Column:Change})
 
 def viewStudents(): # view students
-    try:
-        students = db.child("students").get()
-        for person in students.each():
-            print(person.val())
-            print(person.key())
-    except:
-        print("No Students in System")
+    keyID = []
+    num = 0
+    students = db.child("students").get()
+    for person in students.each():
+        keyID.append(int(person.key()))
+    return(KeyID)
 
 def viewBooks(): #view books
     try:
@@ -83,12 +92,18 @@ def viewBooks(): #view books
         print("No Books in System")
 
 def SearchBookISBN(ISBN): #search book by ISBN in books table
-    pr = db.child("students").child(ISBN).get()
-    return(pr.val())
+    try:
+        pr = db.child("books").child(ISBN).get()
+        return(pr.val())
+    except:
+        print("Incorrect ISBN")
 
 def SearchStudentID(ID): #search student by ID in student table
-    pr = db.child("students").child(ID).get()
-    return(pr.val())
+    try:
+        pr = db.child("students").child(ID).get()
+        return(pr.val())
+    except:
+        print("Incorrect ID")
 
 def deleteStudent(ID):# delete student
     db.child("students").child(ID).remove()
@@ -106,16 +121,38 @@ def booksonloan():
     print(books.val())
 
 
-def split(ID): #Split the students attributes
-    pr = db.child("students").child(ID).get()
-    pr = (pr[0].val())
-    Email = (pr["Email"])
-    Name = (pr["Name"])
-    ID = (pr["ID"])
-    Password = (pr["Password"])
-    print(pr.val())
+def splitStudent(ID): #Split the students attributes
+    try:
+        pr = db.child("students").child(ID).get()
+        pr = (pr[0].val())
+        Email = (pr["Email"])
+        Name = (pr["Name"])
+        ID = (pr["ID"])
+        Surname = (pr["Surname"])
+        Password = (pr["Password"])
+        return Email,Name,ID,Password,Surname
+    except:
+        print("ID does not exist")
 
-    return Email,Name,ID,Password
+
+def splitBook(ISBN): #Split the students attributes
+    try:
+        pr = db.child("books").child(ISBN).get()
+        pr = (pr[0].val())
+        ISBN = (pr["ISBN"])
+        print()
+        Title = (pr["Title"])
+        Catergory = (pr["Category"])
+        Year = (pr["Year"])
+        return ISBN,Title,Catergory,Year
+    except:
+        print("ISBN does not exist")
 
 
 
+
+#print ("{:<30} {:<30} {:<30} {:<30} {:<30}".format('Email', 'ID', 'Name','Password','Surname'))
+# print each data item.
+#for i in range(len(keyID)):
+    #Email,Name,ID,Password,Surname = split(keyID[i])
+    #print("{:<30} {:<30} {:<30} {:<30} {:<30}".format(Email,ID, Name,Password,Surname))
