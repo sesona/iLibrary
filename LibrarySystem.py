@@ -91,6 +91,22 @@ def viewBooks(): #view books
         keyID.append(int(person.key()))
     return(keyID)
 
+def displaybooks(keyID):
+    stringhead =("{:<30} {:<30} {:<30} {:<30} {:<30}".format('ISBN','Title', 'Author','Catergory','Year'))
+#print each data item.
+    for i in range(len(keyID)):
+        ISBN,Title,Author,Catergory,Year = splitBook(keyID[i])
+        stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30} {:<30}".format(ISBN,Title,Author,Catergory,Year)
+    return stringhead
+
+def displaystudents(keyID):
+    stringhead =("{:<30} {:<30} {:<30} {:<30} {:<30}".format('Email', 'ID', 'Name','Password','Surname'))
+#print each data item.
+    for i in range(len(keyID)):
+        Email,Name,ID,Password,Surname = splitStudent(keyID[i])
+        stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30} {:<30}".format(Email,Name,ID,Password,Surname)
+    return stringhead
+
 def SearchBookISBN(ISBN): #search book by ISBN in books table
     try:
         pr = db.child("books").child(ISBN).get()
@@ -150,16 +166,3 @@ def splitBook(ISBN): #Split the students attributes
 
 
 
-#keyID = viewStudents()
-#print ("{:<30} {:<30} {:<30} {:<30} {:<30}".format('Email', 'ID', 'Name','Password','Surname'))
-#print each data item.
-#for i in range(len(keyID)):
-   #Email,Name,ID,Password,Surname = splitStudent(keyID[i])
-  # print("{:<30} {:<30} {:<30} {:<30} {:<30}".format(Email,ID, Name,Password,Surname))
-
-#keyID = viewBooks()
-#print ("{:<30} {:<30} {:<30} {:<30} {:<30}".format('ISBN','Title', 'Author','Catergory','Year'))
-#print each data item.
-#for i in range(len(keyID)):
-    #ISBN,Title,Author,Catergory,Year = splitBook(keyID[i])
-    #print("{:<30} {:<30} {:<30} {:<30} {:<30}".format(ISBN,Title,Author,Catergory,Year))
