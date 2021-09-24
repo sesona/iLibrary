@@ -1,10 +1,4 @@
 import pyrebase
-from tkinter import *
-
-root = Tk()
-root.title("Library")
-root.minsize(width=400,height=400)
-root.geometry("600x500")
 
 FirebaseConfig = { "apiKey": "AIzaSyBSYFWV5E7IexfLszmeyj50JaE9ueZ8moE",
     "authDomain": "library-system-7360c.firebaseapp.com",
