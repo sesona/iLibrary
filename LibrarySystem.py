@@ -80,18 +80,16 @@ def viewStudents(): # view students
     students = db.child("students").get()
     for person in students.each():
         keyID.append(int(person.key()))
-    return(KeyID)
+    return(keyID)
+
 
 def viewBooks(): #view books
-    try:
-        keyID = []
-        num = 0
-        books = db.child("books").get()
-        for person in books.each():
-            keyID.append(int(person.key()))
-            return(KeyID)
-    except:
-        print("No Books in System")
+    keyID = []
+    num = 0
+    books = db.child("books").get()
+    for person in books.each():
+        keyID.append(int(person.key()))
+    return(keyID)
 
 def SearchBookISBN(ISBN): #search book by ISBN in books table
     try:
@@ -142,19 +140,26 @@ def splitBook(ISBN): #Split the students attributes
         pr = db.child("books").child(ISBN).get()
         pr = (pr[0].val())
         ISBN = (pr["ISBN"])
-        print()
+        Author = (pr["Author"])
         Title = (pr["Title"])
         Catergory = (pr["Category"])
         Year = (pr["Year"])
-        return ISBN,Title,Catergory,Year
+        return ISBN,Title,Author,Catergory,Year
     except:
         print("ISBN does not exist")
 
 
 
-
+#keyID = viewStudents()
 #print ("{:<30} {:<30} {:<30} {:<30} {:<30}".format('Email', 'ID', 'Name','Password','Surname'))
-# print each data item.
+#print each data item.
 #for i in range(len(keyID)):
-    #Email,Name,ID,Password,Surname = split(keyID[i])
-    #print("{:<30} {:<30} {:<30} {:<30} {:<30}".format(Email,ID, Name,Password,Surname))
+   #Email,Name,ID,Password,Surname = splitStudent(keyID[i])
+  # print("{:<30} {:<30} {:<30} {:<30} {:<30}".format(Email,ID, Name,Password,Surname))
+
+#keyID = viewBooks()
+#print ("{:<30} {:<30} {:<30} {:<30} {:<30}".format('ISBN','Title', 'Author','Catergory','Year'))
+#print each data item.
+#for i in range(len(keyID)):
+    #ISBN,Title,Author,Catergory,Year = splitBook(keyID[i])
+    #print("{:<30} {:<30} {:<30} {:<30} {:<30}".format(ISBN,Title,Author,Catergory,Year))
