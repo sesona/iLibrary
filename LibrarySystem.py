@@ -84,10 +84,12 @@ def viewStudents(): # view students
 
 def viewBooks(): #view books
     try:
+        keyID = []
+        num = 0
         books = db.child("books").get()
         for person in books.each():
-            print(person.val())
-            print(person.key())
+            keyID.append(int(person.key()))
+            return(KeyID)
     except:
         print("No Books in System")
 
@@ -118,7 +120,7 @@ def myprofile(ID): #Views my profile
 
 def booksonloan():
     books = db.child("books").child("Loaned").get()
-    print(books.val())
+    return(books.val())
 
 
 def splitStudent(ID): #Split the students attributes
