@@ -1,6 +1,7 @@
 import pyrebase
 from datetime import date
-
+from collections import OrderedDict
+import json
 
 FirebaseConfig = { "apiKey": "AIzaSyBSYFWV5E7IexfLszmeyj50JaE9ueZ8moE",
     "authDomain": "library-system-7360c.firebaseapp.com",
@@ -50,15 +51,6 @@ def returnLoan(ID,ISBN): #returns book back to book table and deletes entity
     except:
         print("Error")
 
-def viewloans():
-    try:
-        loans = db.child("outLoan").get()
-        for person in loans.each():
-            print(person.val())
-            print(person.key())
-    except:
-        print("No loaned books")
-
 def AddBook(ISBN,Title,Author,Catergory,Year): #add book in books table
     data = {"ISBN":ISBN,"Title":Title,"Author":Author,"Category":Catergory,"Year":Year}
     db.child("books").child(ISBN).push(data)
@@ -91,20 +83,47 @@ def viewBooks(): #view books
         keyID.append(int(person.key()))
     return(keyID)
 
-def displaybooks(keyID):
-    stringhead =("{:<30} {:<30} {:<30} {:<30} {:<30}".format('ISBN','Title', 'Author','Catergory','Year'))
+def viewloans():#checks the books that are onloan
+    keyID = []
+    ISBN = []
+    num = 0
+    loans = db.child("outLoan").get()
+    for person in loans.each():
+        keyID.append(int(person.key()))
+        loaned = db.child("outLoan").child(keyID[num]).get()
+        num = num+1
+        loaned = loaned[0].val()
+        ISBN.append(int(loaned["ISBN"]))
+    return(keyID,ISBN)
+
+def displayloans(keyID,ISBN):
+    print("-------------------------------------------------------------------------------------------------------------------------------------------------------------")
+    return(displaybooks(ISBN))+(displaystudents(keyID))
+    #stringhead =("{:<30} {:<30} {:<30} {:<30}".format('ISBN','Title', 'Email','ID'))
+    #for i in range(len(keyID)):
+     #   ISBN,Title = splitBook(keyID[i])
+      #  Email,ID = splitStudent(ISBN[i])
+       # stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30}".format(ISBN,Title,Email,ID)
+    #return stringhead
+
+
+def displaybooks(keyID):#allows the books to be viewed in a table
+    stringhead =("{:<40} {:<40} {:<40} {:<40} {:<40}".format('ISBN','Title', 'Author','Catergory','Year'))
+    print("-------------------------------------------------------------------------------------------------------------------------------------------------------------")
 #print each data item.
     for i in range(len(keyID)):
         ISBN,Title,Author,Catergory,Year = splitBook(keyID[i])
-        stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30} {:<30}".format(ISBN,Title,Author,Catergory,Year)
+        stringhead = stringhead + "\n{:<40} {:<40} {:<40} {:<40} {:<40}".format(ISBN,Title,Author,Catergory,Year)
     return stringhead
 
-def displaystudents(keyID):
-    stringhead =("{:<30} {:<30} {:<30} {:<30} {:<30}".format('Email', 'ID', 'Name','Password','Surname'))
+def displaystudents(keyID):#allows the students to be viewed in a table
+    stringhead =("{:<40} {:<40} {:<40} {:<40} {:<40}".format('Email', 'ID', 'Name','Password','Surname'))
+    print("-------------------------------------------------------------------------------------------------------------------------------------------------------------")
 #print each data item.
     for i in range(len(keyID)):
         Email,Name,ID,Password,Surname = splitStudent(keyID[i])
-        stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30} {:<30}".format(Email,Name,ID,Password,Surname)
+        stringhead = stringhead + "\n{:<40} {:<40} {:<40} {:<40} {:<40}".format(Email,ID,Name,Password,Surname)
+
     return stringhead
 
 def SearchBookISBN(ISBN): #search book by ISBN in books table
@@ -132,37 +151,37 @@ def myprofile(ID): #Views my profile
     return(pr.val())
 
 
-def booksonloan():
+def booksonloan():#checks the books that are onloan
     books = db.child("books").child("Loaned").get()
     return(books.val())
 
 
 def splitStudent(ID): #Split the students attributes
     try:
-        pr = db.child("students").child(ID).get()
-        pr = (pr[0].val())
-        Email = (pr["Email"])
-        Name = (pr["Name"])
-        ID = (pr["ID"])
-        Surname = (pr["Surname"])
-        Password = (pr["Password"])
+        OD = json.loads(json.dumps(SearchStudentID(ID)))
+        dict = []
+        for i in OD:
+            dict = OD[i]
+        Email = (dict["Email"])
+        Name = (dict["Name"])
+        ID = (dict["ID"])
+        Surname = (dict["Surname"])
+        Password = (dict["Password"])
         return Email,Name,ID,Password,Surname
     except:
         print("ID does not exist")
 
+def splitBook(ISBN):
+    OD = json.loads(json.dumps(SearchBookISBN(ISBN)))
+    dict = []
+    for i in OD:
+        dict = OD[i]
+    ISBN = (dict["ISBN"])
+    Author = (dict["Author"])
+    Title = (dict["Title"])
+    Catergory = (dict["Category"])
+    Year = (dict["Year"])
+    return ISBN,Title,Author,Catergory,Year
 
-def splitBook(ISBN): #Split the students attributes
-    try:
-        pr = db.child("books").child(ISBN).get()
-        pr = (pr[0].val())
-        ISBN = (pr["ISBN"])
-        Author = (pr["Author"])
-        Title = (pr["Title"])
-        Catergory = (pr["Category"])
-        Year = (pr["Year"])
-        return ISBN,Title,Author,Catergory,Year
-    except:
-        print("ISBN does not exist")
-
-
+    
 
