@@ -3,6 +3,7 @@ from datetime import date
 from collections import OrderedDict
 import json
 
+
 FirebaseConfig = { "apiKey": "AIzaSyBSYFWV5E7IexfLszmeyj50JaE9ueZ8moE",
     "authDomain": "library-system-7360c.firebaseapp.com",
     "databaseURL":"https://library-system-7360c-default-rtdb.firebaseio.com/",
@@ -21,7 +22,7 @@ auth = firebase.auth()
 
 
 #login
-def email(email,password): #email login 
+def email(email,password): #email login
     try:
         auth.sign_in_with_email_and_password(email,password)
         print("Successfully logged in")
@@ -31,24 +32,21 @@ def email(email,password): #email login
 def signup(email,password): #sign up
     try:
         auth.create_user_with_email_and_password(email,password)
+        print("Success! Sign up done!")
+        return True
     except:
-        print("Password too short")
+        print("Existing user or password incorrect!")
+        return False
 
 def checker(ID):
     OD = json.loads(json.dumps(SearchStudentID(ID)))
-    dict = []
-    for i in OD:
-        dict = OD[i]
-    ID1 = dict["ID"]
-    if(ID == ID1):
-        return True
-    else:
+    if(OD == None):
         return False
-
+    else:
+        return True
 
 def loanout(ID,ISBN): #Adds ID,ISBN and date into the loanout table
     try:
-        db.child("books").child(ISBN).update({"Loaned":"yes"})
         time = date.today()
         time = time.strftime('%m/%d/%Y')
         data = {"ID":ID,"ISBN":ISBN,"Date":time}
@@ -58,7 +56,6 @@ def loanout(ID,ISBN): #Adds ID,ISBN and date into the loanout table
 
 def returnLoan(ID,ISBN): #returns book back to book table and deletes entity
     try:
-        db.child("books").child(ISBN).update({"Loaned":"no"})
         db.child("outLoan").child(ID).remove()
     except:
         print("Error")
@@ -72,8 +69,10 @@ def AddStudent(ID,Name,Surname,email,password): #add students in students table
     if(checker(ID)==False):
         data = {"ID":ID,"Name":Name,"Surname":Surname,"Email":email,"Password":password}
         db.child("students").child(ID).push(data)
+        print("User added to database")
+        return True
     else:
-        print("User exists")
+        return False
 
 def UpdateStudent(ID,Column,Change):
     db.child("students").child(ID).update({Column:Change})
@@ -118,31 +117,31 @@ def viewloans():#checks the books that are onloan
 
 def displayloans(keyID,ISBN):
     print("-------------------------------------------------------------------------------------------------------------------------------------------------------------")
-    return(displaybooks(ISBN))+(displaystudents(keyID))
-    #stringhead =("{:<30} {:<30} {:<30} {:<30}".format('ISBN','Title', 'Email','ID'))
-    #for i in range(len(keyID)):
-     #   ISBN,Title = splitBook(keyID[i])
-      #  Email,ID = splitStudent(ISBN[i])
-       # stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30}".format(ISBN,Title,Email,ID)
-    #return stringhead
+    stringhead =("{:<30} {:<30} {:<30} {:<30} {:<30}".format('ID','Email','ISBN','Title','Date'))
+    for i in range(len(keyID)):
+        Email,Name,ID,Password,Surname = splitStudent(keyID[i])
+        ISBN,Title,Author,Catergory,Year = splitBook(ISBN[i])
+        ID,ISBN,Date = splitOuts(keyID[i])
+        stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30} {:<30}".format(ID,Email,ISBN,Title,Date)
+    return stringhead
 
 
 def displaybooks(keyID):#allows the books to be viewed in a table
-    stringhead =("{:<40} {:<40} {:<40} {:<40} {:<40}".format('ISBN','Title', 'Author','Catergory','Year'))
-    print("-------------------------------------------------------------------------------------------------------------------------------------------------------------")
-#print each data item.
+    stringhead = []
+    #print each data item.
     for i in range(len(keyID)):
         ISBN,Title,Author,Catergory,Year = splitBook(keyID[i])
-        stringhead = stringhead + "\n{:<40} {:<40} {:<40} {:<40} {:<40}".format(ISBN,Title,Author,Catergory,Year)
-    return stringhead
+        stringhead.append([ISBN, Title, Author, Catergory, Year])
+    df = pd.DataFrame(stringhead, columns =['ISBN', 'Title', 'Author', 'Category', 'Year'], dtype = int)
+    return df.to_string(col_space = 20, max_colwidth = 60)
 
 def displaystudents(keyID):#allows the students to be viewed in a table
-    stringhead =("{:<40} {:<40} {:<40} {:<40} {:<40}".format('Email', 'ID', 'Name','Password','Surname'))
-    print("-------------------------------------------------------------------------------------------------------------------------------------------------------------")
+    stringhead =("{:>40} {:>40} {:>40} {:>40} {:>40}".format('Email', 'ID', 'Name','Password','Surname'))
+    stringhead = stringhead + (f"\n------------------------------------------------------------------------------")
 #print each data item.
     for i in range(len(keyID)):
         Email,Name,ID,Password,Surname = splitStudent(keyID[i])
-        stringhead = stringhead + "\n{:<40} {:<40} {:<40} {:<40} {:<40}".format(Email,ID,Name,Password,Surname)
+        stringhead = stringhead + "\n{:>40} {:>40} {:>40} {:>40} {:>40}".format(Email,ID,Name,Password,Surname)
 
     return stringhead
 
@@ -160,13 +159,20 @@ def SearchStudentID(ID): #search student by ID in student table
     except:
         print("Incorrect ID")
 
+def SearchLoanID(ID): #search student by ID in student table
+    try:
+        pr = db.child("outLoan").child(ID).get()
+        return(pr.val())
+    except:
+        print("Incorrect ID")
+
 def deleteStudent(ID):# delete student
     db.child("students").child(ID).remove()
 
 def deleteBook(ISBN):# delete book
     db.child("books").child(ISBN).remove()
 
-def myprofile(ID): #Views my profile 
+def myprofile(ID): #Views my profile
     pr = db.child("outLoan").child(ID).get()
     return(pr.val())
 
@@ -196,12 +202,22 @@ def splitBook(ISBN):
     dict = []
     for i in OD:
         dict = OD[i]
-    ISBN = (dict["ISBN"])
+    uISBN = (dict["ISBN"])
     Author = (dict["Author"])
     Title = (dict["Title"])
     Catergory = (dict["Category"])
     Year = (dict["Year"])
-    return ISBN,Title,Author,Catergory,Year
+    return uISBN,Title,Author,Catergory,Year
+
+def splitOuts(ID):
+    OD = json.loads(json.dumps(SearchLoanID(ID)))
+    dict = []
+    for i in OD:
+        dict = OD[i]
+    ID = (dict["ID"])
+    ISBN = (dict["ISBN"])
+    Date = (dict["Date"])
+    return ID,ISBN,Date
 
 
 def Field(ISBN,column):
@@ -211,6 +227,13 @@ def Field(ISBN,column):
         dict = OD[i]
     field= dict[column]
     return field
+
+def editBook(ISBN, column, change):
+    OD = json.loads(json.dumps(SearchBookISBN(ISBN)))
+    dict = []
+    for i in OD:
+        dict = OD[i]
+    dict[column] = change
 
 def SearchTitle(title):
     keyID = []
@@ -242,11 +265,12 @@ def SearchYear(year):
                 Out.append(ISBN)
     return(Out)
 
-def checkUSER(gmail,password):
-    if((gmail =="adminILibrary@gmail.com" )&&(password=="123456789")):
-        return Admin
-    
+
+#def checkUSER(gmail,password):
+    # if((gmail =="adminILibrary@gmail.com" )&&(password=="123456789")):
 
 
-
-
+a,b = viewloans()
+print(a)
+print(b)
+print(displayloans(a,b))
