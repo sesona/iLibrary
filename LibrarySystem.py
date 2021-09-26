@@ -242,7 +242,10 @@ def SearchYear(year):
                 Out.append(ISBN)
     return(Out)
 
-
+def checkUSER(gmail,password):
+    if((gmail =="adminILibrary@gmail.com" )&&(password=="123456789")):
+        return Admin
+    
 
 
 
