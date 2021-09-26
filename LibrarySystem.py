@@ -270,7 +270,4 @@ def SearchYear(year):
     # if((gmail =="adminILibrary@gmail.com" )&&(password=="123456789")):
 
 
-a,b = viewloans()
-print(a)
-print(b)
-print(displayloans(a,b))
+
