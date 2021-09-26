@@ -34,6 +34,18 @@ def signup(email,password): #sign up
     except:
         print("Password too short")
 
+def checker(ID):
+    OD = json.loads(json.dumps(SearchStudentID(ID)))
+    dict = []
+    for i in OD:
+        dict = OD[i]
+    ID1 = dict["ID"]
+    if(ID == ID1):
+        return True
+    else:
+        return False
+
+
 def loanout(ID,ISBN): #Adds ID,ISBN and date into the loanout table
     try:
         db.child("books").child(ISBN).update({"Loaned":"yes"})
@@ -57,13 +69,21 @@ def AddBook(ISBN,Title,Author,Catergory,Year): #add book in books table
     print(Title+" Has been Successfully added")
 
 def AddStudent(ID,Name,Surname,email,password): #add students in students table
-    data = {"ID":ID,"Name":Name,"Surname":Surname,"Email":email,"Password":password}
-    db.child("students").child(ID).push(data)
+    if(checker(ID)==False):
+        data = {"ID":ID,"Name":Name,"Surname":Surname,"Email":email,"Password":password}
+        db.child("students").child(ID).push(data)
+    else:
+        print("User exists")
 
 def UpdateStudent(ID,Column,Change):
     db.child("students").child(ID).update({Column:Change})
 
 def UpdateBooks(ISBN,Column,Change):
+    OD = json.loads(json.dumps(SearchBookISBN(ISBN)))
+    dict = []
+    for i in OD:
+        dict = OD[i]
+    change =(dict["ISBN"])
     db.child("books").child(ISBN).update({Column:Change})
 
 def viewStudents(): # view students
@@ -183,5 +203,47 @@ def splitBook(ISBN):
     Year = (dict["Year"])
     return ISBN,Title,Author,Catergory,Year
 
-    
+
+def Field(ISBN,column):
+    OD = json.loads(json.dumps(SearchBookISBN(ISBN)))
+    dict = []
+    for i in OD:
+        dict = OD[i]
+    field= dict[column]
+    return field
+
+def SearchTitle(title):
+    keyID = []
+    keyID = viewBooks()
+    Out = []
+    for i in range(len(keyID)):
+        if(Field(keyID[i],"Title") == title):
+                ISBN,Title,Author,Catergory,Year = splitBook(keyID[i])
+                Out.append(ISBN)
+    return(Out)
+
+def SearchCat(cat):
+    keyID = []
+    keyID = viewBooks()
+    Out = []
+    for i in range(len(keyID)):
+        if(Field(keyID[i],"Category") == cat):
+                ISBN,Title,Author,Catergory,Year = splitBook(keyID[i])
+                Out.append(ISBN)
+    return(Out)
+
+def SearchYear(year):
+    keyID = []
+    keyID = viewBooks()
+    Out = []
+    for i in range(len(keyID)):
+        if(Field(keyID[i],"Year") == year):
+                ISBN,Title,Author,Catergory,Year = splitBook(keyID[i])
+                Out.append(ISBN)
+    return(Out)
+
+
+
+
+
 
