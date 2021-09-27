@@ -172,11 +172,6 @@ def deleteStudent(ID):# delete student
 def deleteBook(ISBN):# delete book
     db.child("books").child(ISBN).remove()
 
-def myprofile(ID): #Views my profile
-    pr = db.child("outLoan").child(ID).get()
-    return(pr.val())
-
-
 def booksonloan():#checks the books that are onloan
     books = db.child("books").child("Loaned").get()
     return(books.val())
@@ -265,9 +260,24 @@ def SearchYear(year):
                 Out.append(ISBN)
     return(Out)
 
+def myprofile(ID): #Views my profile
+    key = ID
+    stringhead =("{:<30} {:<30} {:<30} {:<30} {:<30}".format('Email', 'ID', 'Name','Password','Surname',))
+    Email,Name,ID,Password,Surname = splitStudent(key)
+    stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30} {:<30}".format(Email,ID,Name,Password,Surname)
+    return(stringhead)
+
+def mybooks(ID): #views my books
+    try:
+        key = ID
+        ID,ISBN,Date = splitOuts(key)
+        uISBN,Title,Author,Catergory,Year = splitBook(ISBN)
+        stringhead =("{:<30} {:<30} {:<30} {:<30} {:<30}{:<30}".format('Title','ISBN','Author','Catergory','Year','Date'))
+        stringhead = stringhead + "\n{:<30} {:<30} {:<30} {:<30} {:<30} {:<30}".format(Title,ISBN,Author,Catergory,Year,Date)
+        return stringhead
+    except:
+        return(False)
 
 #def checkUSER(gmail,password):
     # if((gmail =="adminILibrary@gmail.com" )&&(password=="123456789")):
-
-
 
